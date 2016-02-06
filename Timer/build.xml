@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="SeroUtils"
+<project name="SeroTimer"
          basedir="."
          xmlns:mvn="antlib:org.apache.maven.artifact.ant">
     <property file="library.properties" />

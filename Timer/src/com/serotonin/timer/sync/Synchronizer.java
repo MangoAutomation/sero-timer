@@ -170,40 +170,40 @@ public class Synchronizer<T extends Runnable> {
         }
     }
 
-    public static void main(String[] args) {
-        Synchronizer<TestTask> synchronizer = new Synchronizer<TestTask>(20);
-        synchronizer.addTask("A", new TestTask("a", 4000));
-        synchronizer.addTask("B", new TestTask("b", 5000));
-        synchronizer.addTask("C", new TestTask("c", 10000));
-        synchronizer.addTask("D", new TestTask("d", 3000));
-        synchronizer.addTask("E", new TestTask("e", 1000));
-        synchronizer.addTask("F", new TestTask("f", 70));
-        synchronizer.addTask("G", new TestTask("g", 1));
-        synchronizer.addTask("H", new TestTask("h", 10));
-        synchronizer.addTask("I", new TestTask("i", 100));
-        synchronizer.addTask("J", new TestTask("j", 800));
-        synchronizer.addTask("K", new TestTask("k", 40));
-        synchronizer.addTask("L", new TestTask("l", 250));
-        synchronizer.addTask("M", new TestTask("m", 300));
-        synchronizer.addTask("N", new TestTask("n", 700));
-        synchronizer.addTask("O", new TestTask("o", 700));
-        synchronizer.addTask("P", new TestTask("p", 700));
-        synchronizer.addTask("Q", new TestTask("q", 4));
-        synchronizer.addTask("R", new TestTask("r", 5));
-        synchronizer.addTask("S", new TestTask("s", 6));
-        synchronizer.addTask("T", new TestTask("t", 7));
-
-        RealTimeTimer timer = new RealTimeTimer();
-        ExecutorService executor = Executors.newCachedThreadPool();
-        timer.init(executor);
-
-        System.out.println("*** Begin");
-        synchronizer.executeAndWait(timer);
-        System.out.println("*** Done");
-
-        timer.cancel();
-        executor.shutdown();
-    }
+//    public static void main(String[] args) {
+//        Synchronizer<TestTask> synchronizer = new Synchronizer<TestTask>(20);
+//        synchronizer.addTask("A", new TestTask("a", 4000));
+//        synchronizer.addTask("B", new TestTask("b", 5000));
+//        synchronizer.addTask("C", new TestTask("c", 10000));
+//        synchronizer.addTask("D", new TestTask("d", 3000));
+//        synchronizer.addTask("E", new TestTask("e", 1000));
+//        synchronizer.addTask("F", new TestTask("f", 70));
+//        synchronizer.addTask("G", new TestTask("g", 1));
+//        synchronizer.addTask("H", new TestTask("h", 10));
+//        synchronizer.addTask("I", new TestTask("i", 100));
+//        synchronizer.addTask("J", new TestTask("j", 800));
+//        synchronizer.addTask("K", new TestTask("k", 40));
+//        synchronizer.addTask("L", new TestTask("l", 250));
+//        synchronizer.addTask("M", new TestTask("m", 300));
+//        synchronizer.addTask("N", new TestTask("n", 700));
+//        synchronizer.addTask("O", new TestTask("o", 700));
+//        synchronizer.addTask("P", new TestTask("p", 700));
+//        synchronizer.addTask("Q", new TestTask("q", 4));
+//        synchronizer.addTask("R", new TestTask("r", 5));
+//        synchronizer.addTask("S", new TestTask("s", 6));
+//        synchronizer.addTask("T", new TestTask("t", 7));
+//
+//        RealTimeTimer timer = new RealTimeTimer();
+//        ExecutorService executor = Executors.newCachedThreadPool();
+//        timer.init(executor);
+//
+//        System.out.println("*** Begin");
+//        synchronizer.executeAndWait(timer);
+//        System.out.println("*** Done");
+//
+//        timer.cancel();
+//        executor.shutdown();
+//    }
 
     static long start = System.currentTimeMillis();
 

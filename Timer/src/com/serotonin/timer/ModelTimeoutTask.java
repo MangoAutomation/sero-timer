@@ -1,6 +1,7 @@
 package com.serotonin.timer;
 
 import java.util.Date;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A parameterizable one-time task. Allows the pass-through of a model to the target.
@@ -30,5 +31,10 @@ public class ModelTimeoutTask<T> extends TimerTask {
     @Override
     public void run(long runtime) {
         client.scheduleTimeout(model, runtime);
+    }
+    
+    @Override
+    public void rejected(RejectedTaskReason reason){
+    	throw new RejectedExecutionException(reason.getDescription());
     }
 }

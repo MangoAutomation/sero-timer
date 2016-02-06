@@ -51,6 +51,7 @@ public class SimulationTimer extends AbstractTimer {
                 }
 
                 task.run();
+                
             }
         }
 

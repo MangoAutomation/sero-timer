@@ -1,6 +1,7 @@
 package com.serotonin.timer;
 
 import java.util.Date;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A simple way of creating a timeout.
@@ -26,5 +27,10 @@ public class TimeoutTask extends TimerTask {
     @Override
     public void run(long runtime) {
         client.run(runtime);
+    }
+    
+    @Override
+    public void rejected(RejectedTaskReason reason){
+    	throw new RejectedExecutionException(reason.getDescription());
     }
 }

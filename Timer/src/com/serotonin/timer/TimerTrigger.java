@@ -21,7 +21,7 @@ abstract public class TimerTrigger {
      * Next execution time for this task in the format returned by System.currentTimeMillis, assuming this task is
      * scheduled for execution. For repeating tasks, this field is updated prior to each task execution.
      */
-    long nextExecutionTime;
+    volatile long nextExecutionTime;
 
     /**
      * Returns the <i>scheduled</i> execution time of the most recent <i>actual</i> execution of this task. (If this

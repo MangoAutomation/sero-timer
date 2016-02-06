@@ -10,15 +10,15 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class RealTimeTimer extends AbstractTimer {
-    private static final Log LOG = LogFactory.getLog(RealTimeTimer.class);
+public class RealTimeTimer extends AbstractTimer{
+    protected static final Log LOG = LogFactory.getLog(RealTimeTimer.class);
 
     /**
      * The timer task queue. This data structure is shared with the timer thread. The timer produces tasks, via its
      * various schedule calls, and the timer thread consumes, executing timer tasks as appropriate, and removing them
      * from the queue when they're obsolete.
      */
-    private final TaskQueue queue = new TaskQueue();
+    protected final TaskQueue queue = new TaskQueue();
 
     /**
      * The timer thread.
@@ -29,7 +29,7 @@ public class RealTimeTimer extends AbstractTimer {
     private boolean ownsExecutor;
     private Exception cancelStack;
 
-    private TimeSource timeSource = new SystemTimeSource();
+    protected TimeSource timeSource = new SystemTimeSource();
 
     public void setTimeSource(TimeSource timeSource) {
         this.timeSource = timeSource;
@@ -47,6 +47,11 @@ public class RealTimeTimer extends AbstractTimer {
         thread.start();
     }
 
+    public void init(TimerThread timer){
+    	this.thread = timer;
+    	this.thread.start();
+    }
+    
     @Override
     public boolean isInitialized() {
         return thread != null;

@@ -29,6 +29,7 @@ class TimerThread extends Thread {
         this.queue = queue;
         this.executorService = executorService;
         this.timeSource = timeSource;
+        
     }
 
     @Override
@@ -65,6 +66,19 @@ class TimerThread extends Thread {
         return executorService;
     }
 
+    void executeTask(TimerTask task, long executionTime){
+    	executorService.execute(task);
+    }
+    
+	/**
+	 * Override as necessary
+	 * @param task
+	 * @param e
+	 */
+	void taskRejected(TimerTask task, RejectedExecutionException e) {
+		task.rejected(new RejectedTaskReason(RejectedTaskReason.POOL_FULL));
+	}
+    
     /**
      * The main timer loop. (See class comment.)
      */
@@ -73,6 +87,7 @@ class TimerThread extends Thread {
             try {
                 TimerTask task;
                 boolean taskFired;
+                long executionTime;
                 synchronized (queue) {
                     // Wait for queue to become non-empty
                     while (queue.isEmpty() && newTasksMayBeScheduled)
@@ -81,7 +96,6 @@ class TimerThread extends Thread {
                         break; // Queue is empty and will forever remain; die
 
                     // Queue nonempty; look at first evt and do the right thing
-                    long executionTime;
                     task = queue.getMin();
                     synchronized (task.lock) {
                         if (task.state == TimerTask.CANCELLED) {
@@ -109,11 +123,15 @@ class TimerThread extends Thread {
                 if (taskFired) {
                     // Task fired; run it, holding no locks
                     try {
-                        executorService.execute(task);
+//                    	System.out.println("Task: " + task.hashCode() + " scheduled: " + executionTime + " now: " + timeSource.currentTimeMillis() + " Scheduled");
+                        this.executeTask(task, executionTime);
                     }
                     catch (RejectedExecutionException e) {
-                        LOG.warn("Rejected task: " + task, e);
+                        LOG.warn("Rejected task: " + task.hashCode(), e);
+                        this.taskRejected(task, e);
                     }
+                }else{
+//                	System.out.println("Task: " + task.hashCode() + " scheduled: " + executionTime + " now: " + timeSource.currentTimeMillis());
                 }
             }
             catch (InterruptedException e) {

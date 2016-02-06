@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class TimerTask implements Runnable {
+public abstract class TimerTask implements Runnable{
     /**
      * This object is used to control access to the TimerTask internals.
      */
@@ -106,16 +106,21 @@ public abstract class TimerTask implements Runnable {
     abstract public void run(long runtime);
 
     @Override
-    final public void run() {
+    final public void run(){
         // TODO if the task is not called quickly enough, the nextExecutionTime
         // may have already been changed. It would
         // be better to have the value assigned at the moment the task is
         // submitted to the thread pool, but the
         // interface doesn't allow it. For now, this will have to do.
-        long t;
+    	long t;
         synchronized (lock) {
             t = trigger.mostRecentExecutionTime();
         }
+        runTask(t);
+    }
+    
+    final public void runTask(long runtime) {
+    	//System.out.println("Task: " + this.hashCode() + " scheduled: " + runtime + " now: " + System.currentTimeMillis() + " Running");
 
         String originalName = null;
         try {
@@ -132,7 +137,7 @@ public abstract class TimerTask implements Runnable {
                 try {
                     cancelLock.readLock().lock();
                     if (state != CANCELLED)
-                        run(t);
+                        run(runtime);
                 }
                 finally {
                     cancelLock.readLock().unlock();
@@ -140,7 +145,7 @@ public abstract class TimerTask implements Runnable {
             }
             else
                 // Ok, go ahead and run the thingy.
-                run(t);
+                run(runtime);
         }
         finally {
             if (originalName != null)
@@ -163,5 +168,20 @@ public abstract class TimerTask implements Runnable {
 
     AbstractTimer getTimer() {
         return trigger.getTimer();
+    }
+    
+    /**
+     * Called if task is rejected from Timer Thread's Executor service
+     */
+    public void rejected(RejectedTaskReason reason){
+    	//Override as necessary
+    }
+    
+    /**
+     * Used to identify tasks when used in the OrderedRealTimeTimer 
+     * @return
+     */
+    public int getTaskId(){
+    	return this.hashCode();
     }
 }

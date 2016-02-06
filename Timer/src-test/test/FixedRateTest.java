@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.serotonin.timer.FixedRateTrigger;
 import com.serotonin.timer.RealTimeTimer;
+import com.serotonin.timer.RejectedTaskReason;
 import com.serotonin.timer.TimeSource;
 import com.serotonin.timer.TimerTask;
 
@@ -35,6 +36,11 @@ public class FixedRateTest {
             public void run(long runtime) {
                 System.out.println("executed at " + new Date(runtime));
             }
+
+			@Override
+			public void rejected(RejectedTaskReason reason) {
+				System.out.println("task rejected: " + reason.getDescription());
+			}
         };
 
         timer.schedule(task);
