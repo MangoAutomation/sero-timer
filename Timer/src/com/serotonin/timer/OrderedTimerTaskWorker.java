@@ -33,4 +33,11 @@ public class OrderedTimerTaskWorker implements Runnable{
 		this.task.rejected(reason);
 	}
 
+	public TimerTask getTask(){
+		return this.task;
+	}
+
+	public long getExecutionTime(){
+		return this.executionTime;
+	}
 }

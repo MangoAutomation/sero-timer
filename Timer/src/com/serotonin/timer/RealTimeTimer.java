@@ -23,7 +23,7 @@ public class RealTimeTimer extends AbstractTimer{
     /**
      * The timer thread.
      */
-    private TimerThread thread;
+    protected TimerThread thread;
 
     // Do i own the executor?
     private boolean ownsExecutor;

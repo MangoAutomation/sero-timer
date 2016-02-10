@@ -4,7 +4,12 @@
  */
 package com.serotonin.timer;
 
+import java.util.concurrent.Executor;
+
 /**
+ * Wrapper class to allow information about rejected tasks as there are additional reasons 
+ * tasks can be rejected from the custom Executors in this library
+ * 
  * @author Terry Packer
  *
  */
@@ -15,9 +20,22 @@ public class RejectedTaskReason {
 	public static final int CURRENTLY_RUNNING = 3; //The task is Ordered and one of its worker instances is already running
 	
 	private int code;
+	private long scheduledExecutionTime;
+	private TimerTask task;
+	private Executor executor;
 	
-	public RejectedTaskReason(int reasonCode){
+	/**
+	 * 
+	 * @param reasonCode
+	 * @param scheduledExecutionTime
+	 * @param task
+	 * @param e
+	 */
+	public RejectedTaskReason(int reasonCode, long scheduledExecutionTime, TimerTask task, Executor e){
 		this.code = reasonCode;
+		this.scheduledExecutionTime = scheduledExecutionTime;
+		this.task = task;
+		this.executor = e;
 	}
 	
 	public int getCode(){
@@ -35,6 +53,30 @@ public class RejectedTaskReason {
 		default:
 			return "Unknown";
 		}
+	}
+	
+	/**
+	 * Get the time at which the task should have fired
+	 * @return
+	 */
+	public long getScheduledExecutionTime(){
+		return this.scheduledExecutionTime;
+	}
+	
+	/**
+	 * Get the task that was rejected
+	 * @return
+	 */
+	public TimerTask getTask(){
+		return this.task;
+	}
+	
+	/**
+	 * Get the executor that it was rejected from
+	 * @return
+	 */
+	public Executor getExecutor(){
+		return this.executor;
 	}
 	
 }

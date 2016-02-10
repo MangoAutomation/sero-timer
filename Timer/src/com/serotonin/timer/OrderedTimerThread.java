@@ -6,6 +6,8 @@ package com.serotonin.timer;
 
 
 /**
+ * 
+ * Class that ensures only OrderedTimerTaskWorkers are sent into the OrderedThreadPoolExecutor
  * @author Terry Packer
  *
  */
@@ -17,7 +19,6 @@ class OrderedTimerThread extends TimerThread{
         super(queue, executorService, timeSource);
         this.executorService = executorService;
     }
-
 
     /* (non-Javadoc)
      * @see com.serotonin.timer.TimerThread#executeTask(com.serotonin.timer.TimerTask)

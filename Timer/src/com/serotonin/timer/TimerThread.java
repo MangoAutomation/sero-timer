@@ -75,8 +75,8 @@ class TimerThread extends Thread {
 	 * @param task
 	 * @param e
 	 */
-	void taskRejected(TimerTask task, RejectedExecutionException e) {
-		task.rejected(new RejectedTaskReason(RejectedTaskReason.POOL_FULL));
+	void taskRejected(long executionTime, TimerTask task, RejectedExecutionException e) {
+		task.rejected(new RejectedTaskReason(RejectedTaskReason.POOL_FULL, executionTime, task, this.executorService));
 	}
     
     /**
@@ -123,15 +123,13 @@ class TimerThread extends Thread {
                 if (taskFired) {
                     // Task fired; run it, holding no locks
                     try {
-//                    	System.out.println("Task: " + task.hashCode() + " scheduled: " + executionTime + " now: " + timeSource.currentTimeMillis() + " Scheduled");
+                    	//System.out.println("Scheduled: " + executionTime + " time: " + System.currentTimeMillis() + " task: " + task.getTaskId());
                         this.executeTask(task, executionTime);
                     }
                     catch (RejectedExecutionException e) {
                         LOG.warn("Rejected task: " + task.hashCode(), e);
-                        this.taskRejected(task, e);
+                        this.taskRejected(executionTime, task, e);
                     }
-                }else{
-//                	System.out.println("Task: " + task.hashCode() + " scheduled: " + executionTime + " now: " + timeSource.currentTimeMillis());
                 }
             }
             catch (InterruptedException e) {
