@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 * Note that every queue will be removed once it is empty.  
 * 
 */
-public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
+public class OrderedThreadPoolExecutor extends ThreadPoolExecutor implements RejectedExecutionHandler{
 
 	//Task to queue map
 	private final Map<Object, LimitedTaskQueue> keyedTasks = new HashMap<Object, LimitedTaskQueue>();
@@ -41,6 +42,7 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 	//Default size for all queues with task IDs not in the below map
 	private int defaultQueueSize;
 	private boolean flushFullQueue;
+	private RejectedExecutionHandler handler;
 	
     /**
 	 * @param corePoolSize
@@ -53,9 +55,11 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 	public OrderedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
 			long keepAliveTime, TimeUnit unit,
 			BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
-		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
+		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
 		this.defaultQueueSize = 0;
 		this.flushFullQueue = false;
+		super.setRejectedExecutionHandler(this);
+		this.handler = handler;
 	}
 
 	/**
@@ -72,7 +76,9 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 			BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
 			RejectedExecutionHandler handler) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-				threadFactory, handler);
+				threadFactory);
+		super.setRejectedExecutionHandler(this);
+		this.handler = handler;
 		this.defaultQueueSize = 0;
 		this.flushFullQueue = false;
 	}
@@ -109,11 +115,14 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 	 */
 	public OrderedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
 			long keepAliveTime, TimeUnit unit,
-			BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, int defaultQueueSize, boolean flushFullQueue) {
+			BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler, 
+			int defaultQueueSize, boolean flushFullQueue) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
 				threadFactory);
 		this.defaultQueueSize = defaultQueueSize;
 		this.flushFullQueue = flushFullQueue;
+		super.setRejectedExecutionHandler(this);
+		this.handler = handler;
 	}
 	
 	/**
@@ -130,6 +139,15 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 		this.flushFullQueue = false;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.concurrent.ThreadPoolExecutor#setRejectedExecutionHandler(java.util.concurrent.RejectedExecutionHandler)
+	 */
+	@Override
+	public void setRejectedExecutionHandler(RejectedExecutionHandler handler) {
+		this.handler = handler;
+	}
+	
+	
 	public void execute(OrderedTimerTaskWorker worker, Object key) {
         if (key == null){ // if key is null, execute without ordering
             execute(worker);
@@ -161,6 +179,7 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
             execute(wrappedTask);
         else if(!added){
         	OrderedTask t = dependencyQueue.getRejectedTasks().poll();
+        	
         	while(t != null){
         		t.reject(this);
         		t = dependencyQueue.getRejectedTasks().poll();
@@ -170,6 +189,38 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
 
     }
 
+	/** 
+	 * We need to ensure we remove the keyed tasks if we get rejected
+	 * 
+	 * @see java.util.concurrent.RejectedExecutionHandler#rejectedExecution(java.lang.Runnable, java.util.concurrent.ThreadPoolExecutor)
+	 */
+	@Override
+	public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
+		
+		if(r instanceof OrderedTask){
+			synchronized (keyedTasks){
+				//Don't bother trying to run the queue we've got a problem
+				OrderedTask t  = (OrderedTask)r;
+				if (t.dependencyQueue.isEmpty()){
+                    keyedTasks.remove(t.key);
+                }else{
+                	//Could be trouble, but let it fail if it must
+                    //execute(t.dependencyQueue.poll());
+                }
+			}
+		}
+		
+		if(this.handler != null){
+			//Pass it along
+			this.handler.rejectedExecution(r, e);
+		}else{
+			//Default Behavior
+			throw new RejectedExecutionException("Task " + r.toString() +
+                    " rejected from " +
+                    e.toString());
+		}
+	}
+	
 	/**
 	 * Update the default queue size for a given taskId
 	 * @param newSize
@@ -245,6 +296,11 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor{
         
         public void reject(Executor e){
         	this.task.reject(new RejectedTaskReason(this.rejectedReason, task.getExecutionTime(), this.task.getTask(), e));
+        }
+        
+        @Override
+        public String toString(){
+        	return this.task.toString();
         }
     }
     

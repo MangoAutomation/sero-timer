@@ -40,4 +40,9 @@ public class OrderedTimerTaskWorker implements Runnable{
 	public long getExecutionTime(){
 		return this.executionTime;
 	}
+	
+	@Override
+	public String toString(){
+		return this.task.toString();
+	}
 }
