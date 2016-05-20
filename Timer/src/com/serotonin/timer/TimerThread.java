@@ -66,7 +66,11 @@ class TimerThread extends Thread {
         return executorService;
     }
 
-    void executeTask(TimerTask task, long executionTime){
+    void executeTask(TaskWrapper wrapper){
+    	executorService.execute(wrapper);
+    }
+    
+    void execute(TaskWrapper task){
     	executorService.execute(task);
     }
     
@@ -123,11 +127,13 @@ class TimerThread extends Thread {
                 if (taskFired) {
                     // Task fired; run it, holding no locks
                     try {
-                    	//System.out.println("Scheduled: " + executionTime + " time: " + System.currentTimeMillis() + " task: " + task.getTaskId());
-                        this.executeTask(task, executionTime);
+                    	//System.out.println("Scheduled: " + executionTime + " time: " + System.currentTimeMillis() + " task: " + task.getName());
+                        TaskWrapper wrapper = new TaskWrapper(task, task.trigger.mostRecentExecutionTime());
+                    	//task.executionTime = executionTime;
+                    	this.executeTask(wrapper);
                     }
                     catch (RejectedExecutionException e) {
-                        LOG.warn("Rejected task: " + task.hashCode(), e);
+                        LOG.warn("Rejected task: " + task.getName(), e);
                         this.taskRejected(executionTime, task, e);
                     }
                 }

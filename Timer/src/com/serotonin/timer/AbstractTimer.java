@@ -11,6 +11,12 @@ abstract public class AbstractTimer {
 
     abstract public void execute(Runnable command);
 
+    /**
+     * Execute a task with optional ordering if the Timer implementation supports this.
+     * @param command
+     */
+    abstract public void execute(Task command);
+
     public void execute(Runnable command, String name) {
         if (StringUtils.isBlank(name))
             execute(command);
@@ -19,6 +25,8 @@ abstract public class AbstractTimer {
     }
 
     abstract public void execute(ScheduledRunnable command, long fireTime);
+
+
 
     public void execute(ScheduledRunnable command, long fireTime, String name) {
         if (StringUtils.isBlank(name))

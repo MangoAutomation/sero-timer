@@ -50,7 +50,7 @@ public class SimulationTimer extends AbstractTimer {
                     updateQueue();
                 }
 
-                task.run();
+                task.runTask(task.trigger.mostRecentExecutionTime());
                 
             }
         }
@@ -192,4 +192,12 @@ public class SimulationTimer extends AbstractTimer {
     // System.out.println(name + " ran at " + runtime);
     // }
     // }
+
+	/* (non-Javadoc)
+	 * @see com.serotonin.timer.AbstractTimer#execute(com.serotonin.timer.OrderedRunnable, long)
+	 */
+	@Override
+	public void execute(Task command) {
+		command.runTask(this.currentTime);
+	}
 }

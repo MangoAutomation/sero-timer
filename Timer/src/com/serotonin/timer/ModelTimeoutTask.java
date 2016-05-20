@@ -23,7 +23,7 @@ public class ModelTimeoutTask<T> extends TimerTask {
     }
 
     public ModelTimeoutTask(TimerTrigger trigger, ModelTimeoutClient<T> client, T model) {
-        super(trigger);
+        super(trigger, null, null, 0);
         this.client = client;
         this.model = model;
     }

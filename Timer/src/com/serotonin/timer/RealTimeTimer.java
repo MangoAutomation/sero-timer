@@ -86,6 +86,13 @@ public class RealTimeTimer extends AbstractTimer{
         thread.execute(command);
     }
 
+    @Override
+    public void execute(Task command) {
+        if (thread == null)
+            throw new IllegalStateException("Run init first");
+        thread.execute(new TaskWrapper(command, this.currentTimeMillis()));
+    }
+    
     /**
      * A convenience method that executes the given command in the executor service immediately.
      * 
@@ -236,6 +243,8 @@ public class RealTimeTimer extends AbstractTimer{
     public long currentTimeMillis() {
         return timeSource.currentTimeMillis();
     }
+   
+    
     //
     // @SuppressWarnings("unchecked")
     // public static void main(String[] args) throws Exception {

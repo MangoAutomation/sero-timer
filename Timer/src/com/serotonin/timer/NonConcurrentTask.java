@@ -19,11 +19,11 @@ abstract public class NonConcurrentTask extends TimerTask {
     private long threadRuntime;
 
     public NonConcurrentTask(TimerTrigger trigger) {
-        super(trigger);
+        super(trigger, null, null, 0);
     }
 
     public NonConcurrentTask(TimerTrigger trigger, String name) {
-        super(trigger, name);
+        super(trigger, name, null, 0);
     }
 
     @Override

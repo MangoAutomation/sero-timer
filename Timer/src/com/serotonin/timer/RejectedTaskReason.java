@@ -21,7 +21,7 @@ public class RejectedTaskReason {
 	
 	private int code;
 	private long scheduledExecutionTime;
-	private TimerTask task;
+	private Task task;
 	private Executor executor;
 	
 	/**
@@ -31,7 +31,7 @@ public class RejectedTaskReason {
 	 * @param task
 	 * @param e
 	 */
-	public RejectedTaskReason(int reasonCode, long scheduledExecutionTime, TimerTask task, Executor e){
+	public RejectedTaskReason(int reasonCode, long scheduledExecutionTime, Task task, Executor e){
 		this.code = reasonCode;
 		this.scheduledExecutionTime = scheduledExecutionTime;
 		this.task = task;
@@ -64,10 +64,10 @@ public class RejectedTaskReason {
 	}
 	
 	/**
-	 * Get the task that was rejected
+	 * 
 	 * @return
 	 */
-	public TimerTask getTask(){
+	public Task getTask(){
 		return this.task;
 	}
 	

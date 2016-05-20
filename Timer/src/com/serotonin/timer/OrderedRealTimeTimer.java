@@ -35,7 +35,7 @@ public class OrderedRealTimeTimer extends RealTimeTimer{
 	
 	@Override
     public void init() {
-        this.init(new OrderedThreadPoolExecutor(0, 1000, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>()));
+        this.init(new OrderedThreadPoolExecutor(0, 1000, 30L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), false));
     }
 	
 	@Override
