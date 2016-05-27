@@ -13,7 +13,7 @@ public class TaskWrapper implements Runnable{
 	Task task;
 	long executionTime;
 	
-	TaskWrapper(Task task, long executionTime){
+	public TaskWrapper(Task task, long executionTime){
 		this.task = task;
 		this.executionTime = executionTime;
 	}
