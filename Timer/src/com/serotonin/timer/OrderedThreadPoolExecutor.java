@@ -155,9 +155,11 @@ public class OrderedThreadPoolExecutor extends ThreadPoolExecutor implements Rej
 
 		//No ordering
 		if(worker.task.id == null){
+			throw new RuntimeException(worker.task.name + ": Needs non-null id");
+		}
+		if(!worker.task.queueable){
 			execute((Runnable)worker);
 			return;
-			
 		}
 		
         boolean first;

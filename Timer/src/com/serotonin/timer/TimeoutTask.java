@@ -20,7 +20,7 @@ public class TimeoutTask extends TimerTask {
     }
 
     public TimeoutTask(TimerTrigger trigger, ScheduledRunnable client) {
-        super(trigger, null, null, 0);
+        super(trigger, null, null, 0, false);
         this.client = client;
     }
 

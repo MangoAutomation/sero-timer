@@ -20,8 +20,8 @@ public abstract class TimerTask extends Task{
 	 * @param name - name of thread during runtime
 	 * @param id - not null will create an ordered queue of tasks if the timer supports it
 	 */
-    public TimerTask(TimerTrigger trigger, String name, String id, int queueSize) {
-    	super(name, id, queueSize);
+    public TimerTask(TimerTrigger trigger, String name, String id, int queueSize, boolean queueable) {
+    	super(name, id, queueSize, queueable);
         if (trigger == null)
             throw new NullPointerException();
         this.trigger = trigger;

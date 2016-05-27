@@ -34,7 +34,7 @@ public class OrderedRealTimeTimerTest {
 		timer.init(executor);
 		
 		FixedRateTrigger trigger = new FixedRateTrigger(0, 5);
-		TimerTask task = new TimerTask(trigger, "task1", "1", 5){
+		TimerTask task = new TimerTask(trigger, "task1", "1", 5, true){
 			
 			private int count = 0;
 
